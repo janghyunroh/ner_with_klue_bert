@@ -1,35 +1,47 @@
-# PLM 기반 한국어 개체명 인식 (NER)
-주요 한국어 PLM의 fine-tuning을 통해 한국어 개체명 인식 다운스트림 태스크를 진행했습니다. HuggingFace 라이브러리를 활용해 국립국어원 개체명 분석 말뭉치 데이터셋에서 개체명으로 정의된 15개 개체명 유형 (인명, 지명, 문명, 인공물 등)에 대해 개체명 인식기를 구현했습니다. 
+# Pre-trained KLUE-BERT 모델 기반 NER 시스템 Fine-tuning
 
-이 repository의 코드는 기존 코드에서 sequence labeling 방식과 편의성 관련 기능을 수정한 버전입니다. 기존 코드와는 사용 방식과 결과 점수에 다소 차이가 있으며, 변경점은 문서 아래에 기재되어 있습니다.
+**원본 저장소**: [GitHub](https://github.com/ai2-ner-project/pytorch-ko-ner)
+
+한국어 PLM fine-tuning 코드를 활용하여 법적 문서라는 특수 도메인에 대한 개체명 인식기를 구현했습니다. 
+HugggingFace 라이브러리를 이용해 KLUE-BERT 모델을 Fine-tuning 하였으며, 보안을 위해 직접 데이터 레이블링과 데이터셋 구축을 진행했습니다. 
+
+기존 코드를 활용하기 위해 학습 시 여러 번의 전처리를 거치게 됩니다. 
 
 
-## Data
-- 국립국어원  개체명  분석  말뭉치 2021 (https://corpus.korean.go.kr/main.do)
-- 문어체 300만 + 문어체 300만 단어로 총 600만 단어, 약 80만 문장으로 구성
-- 80만 문장 가운데 개체명 태깅 정보가 없는 경우를 제외하고 약 35만 문장으로 태스크 진행
+## DataSet
+- 대한민국 법원의 공식 판결문과 경찰청의 청구전조사서 등 법적 문서를 원본 데이터로 사용하였습니다.
+- 레이블의 경우 
 
 
 ## Pre-Requisite
 - python 3.8 기준으로 테스트
 - 설치 모듈 상세정보는 requirements.txt 파일 참고 
-- skt/kobert-base-v1의 경우 kobert tokenizer 추가 설치 필요 
 
 ```bash
 pip install -r requirements.txt
-pip install 'git+https://github.com/SKTBrain/KoBERT.git#egg=kobert_tokenizer&subdirectory=kobert_hf' 
 ```
 
-## PLM Comparision
-|Model|PretrainingCorpus|Tokenization|Vocabulary|Hidden|Layers|Heads|Batch|
-|-|-|-|-|-|-|-|-|
-|klue/bert-base|6.5B words incl. Modu, Namuwiki|Mecab +BPE|32,000|768|12|12|256|
-|klue/roberta-base|6.5B words incl. Modu, Namuwiki|Mecab +BPE|32,000|768|12|12|2048|
-|skt/kobert-base-v1|Korean Wiki 54M words  |SentencePiece|8,002|3072|12|12|-|
-|monologg/koelectra-base-v3-discriminator|crawled news data and Modu  |Wordpiece|35,000|768|12|12|256|
-|monologg/kobigbird-bert-base|crawled news data and Modu  |Sentencepiece|32,500|768|12|12|32|
 
 ## How to Use
+
+원본 코드
+https://github.com/ai2-ner-project/pytorch-ko-ner
+https://github.com/sim-so/pytorch-ko-ner-v2
+
+가상환경 세팅
+ner-v2.yaml로 가상환경 만들고 activate
+
+데이터 변환 과정
+json_to_tsv_01.ipynb (json → raw)
+preprocess_00.ipynb (raw → dataset)
+encoding_03.ipynb (dataset → encoded)
+
+<train>
+python hf_trainer.py --model_folder models --data_fn data/encoded/train.klue_roberta-base.encoded.pickle
+python hf_trainer.py --model_folder models --data_fn data/encoded/train.klue_roberta-base.encoded.pickle --use_kfold --n_splits 5
+
+<demo>
+streamlit run demo_02.py
 
 ### Preparation
 1. 여러 개의 json 파일로 저장된 데이터를 표 형식으로 변환하고 pickle로 저장합니다. pickle 파일 저장 시 이름은 load_path 경로에서 마지막 이름을 사용합니다.
