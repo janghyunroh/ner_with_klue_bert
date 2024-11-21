@@ -1,0 +1,12 @@
+*.h5
+*.tsv
+*.pickle
+*.json
+*.bin
+*.pt
+*.pth
+*.csv
+/data
+/models
+/checkpoints
+*/__pycache__

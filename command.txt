@@ -1,0 +1,51 @@
+<json_to_tsv>
+python ./preprocess/json_to_tsv.py --load_path data/json/19_150tags_NamedEntity --save_path data/raw
+python ./preprocess/json_to_tsv.py --load_path data/json/19_150tags_NamedEntity/NXNE2102008030.json --save_path data/raw
+
+<preprocess>
+python ./preprocess/preprocess.py --load_path data/raw --save_path data/dataset --test_size 0.15 --test_o_size 0.2 --save_all --return_tsv
+
+<encoding>
+python ./preprocess/encoding.py --load_fn data/dataset/train.pickle --pretrained_model_name klue/roberta-base --save_path data/encoded
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<위는 신경쓰지 말 것>
+원본 코드
+https://github.com/ai2-ner-project/pytorch-ko-ner
+https://github.com/sim-so/pytorch-ko-ner-v2
+
+가상환경 세팅
+ner-v2.yaml로 가상환경 만들고 activate
+
+데이터 변환 과정
+json_to_tsv_01.ipynb (json → raw)
+preprocess_00.ipynb (raw → dataset)
+encoding_03.ipynb (dataset → encoded)
+
+
+
+<train>
+python hf_trainer.py --model_folder models --data_fn data/encoded/train.klue_roberta-base.encoded.pickle
+python hf_trainer.py --model_folder models --data_fn data/encoded/train.klue_roberta-base.encoded.pickle --use_kfold --n_splits 5
+
+<demo>
+streamlit run demo_02.py
