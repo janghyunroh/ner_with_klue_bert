@@ -8,26 +8,6 @@ python ./preprocess/preprocess.py --load_path data/raw --save_path data/dataset 
 <encoding>
 python ./preprocess/encoding.py --load_fn data/dataset/train.pickle --pretrained_model_name klue/roberta-base --save_path data/encoded
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <위는 신경쓰지 말 것>
 원본 코드
 https://github.com/ai2-ner-project/pytorch-ko-ner
@@ -40,8 +20,6 @@ ner-v2.yaml로 가상환경 만들고 activate
 json_to_tsv_01.ipynb (json → raw)
 preprocess_00.ipynb (raw → dataset)
 encoding_03.ipynb (dataset → encoded)
-
-
 
 <train>
 python hf_trainer.py --model_folder models --data_fn data/encoded/train.klue_roberta-base.encoded.pickle
