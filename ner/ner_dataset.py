@@ -1,8 +1,18 @@
 import torch
 from torch.utils.data import Dataset
 
+# 데이터 파일들을 모두 읽어서 학습 과정에 사용되는 데이터셋으로 
+# 만들어주는 클래스들입니다.
+# encoding 까지 완료된 파일들을 hf_trainer.py 에서 불러와 
+# 아래 클래스들을 이용하여 batch 처리, 시퀀스 패딩, 마스킹 등을 수행합니다.
 
 class NERCollator():
+    '''
+    1. batch 처리를 위한 데이터 정렬
+    2. 시퀀스 패딩
+    3. 텍스트, 마스크, 레이블을 텐서로 변환
+    4. mini-batch 생성 시 활용됨
+    '''
 
     def __init__(self, pad_token, with_text=True) -> None:
         self.pad_token = pad_token # ([PAD], {pad_token_id})
@@ -41,6 +51,10 @@ class NERCollator():
 
 
 class NERDataset(Dataset):
+    '''
+    1. 텍스트와 레이블을 읽어옴
+    2. 텍스트와 레이블을 텐서로 변환
+    '''
 
     def __init__(self, texts, labels) -> None:
         self.texts = texts
